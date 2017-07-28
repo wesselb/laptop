@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# TODO: The unarchiver
+# TODO: Atom settings
+
 set -e
 
 . utils.sh
@@ -29,14 +32,17 @@ brew cask install \
     betterzipql \
     daisydisk \
     dash \
+    duet \
     dropbox \
     filezilla \
     flux \
     gfxcardstatus \
     google-chrome \
+    handbreak \
     haskell-platform \
     istat-menus \
     iterm2 \
+    julia \
     launchcontrol \
     little-snitch \
     mactex \
@@ -96,7 +102,7 @@ echo "Installing python packages..."
     pylint
 
 echo "Configuring Dock..."
-sed "s@{{HOME_PATH}}@${HOME}@" resources/com.apple.dock.plist \
+sed "s@{{HOME_PATH}}@${HOME}@" Resources/com.apple.dock.plist \
     | plutil \
         -convert binary1 \
         -o ~/Library/Preferences/com.apple.dock.plist \
@@ -111,7 +117,38 @@ if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Pac
         -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
 fi
 
+echo "Installing Source Code Pro for Powerline..."
+cp "resources/Source Code Powerline Regular.otf" /Library/Fonts
+
+echo "Fixing your Mac..."
+cd Resources
+bash homecall.sh fixmacos
+cd ..
+
 echo "Please log into Dropbox."
+wait_confirmation
+
+echo "Setting desktop picture..."
+sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "update data set value = '"$HOME"/Dropbox/Private/Media/Backgrounds/Liquicity Escapism.jpg'" && killall Dock
+
+echo "Syncing configs..."
+cd ~/Dropbox/Private/Sync/Configs
+./link.sh
+
+echo "Please manually sync the following apps with Dropbox:"
+echo "    1Password"
+echo "    Alfred"
+echo "    Dash"
+wait_confirmation
+
+echo "Please configure the energy management saving settings to your liking."
+wait_confirmation
+
+echo "Please configure the sharing settings to your liking."
+wait_confirmation
+
+echo "Please delete unnecessary preinstalled apps with AppCleaner."
+open -a AppCleaner
 wait_confirmation
 
 echo "Installation finished."
