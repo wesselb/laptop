@@ -115,8 +115,7 @@ start(){
   echo ""
   for agent in "${AGENTS[@]}"
   do
-    sudo launchctl unload -w /System/Library/LaunchAgents/${agent}.plist
-    launchctl unload -w /System/Library/LaunchAgents/${agent}.plist
+    sudo launchctl unload -w /System/Library/LaunchAgents/${agent}.plist >/dev/null
     echo "Agent ${agent} disabled"
   done
   echo ""
@@ -124,8 +123,7 @@ start(){
   echo ""
   for daemon in "${DAEMONS[@]}"
   do
-    sudo launchctl unload -w /System/Library/LaunchDaemons/${daemon}.plist
-    launchctl unload -w /System/Library/LaunchDaemons/${daemon}.plist
+    sudo launchctl unload -w /System/Library/LaunchDaemons/${daemon}.plist >/dev/null
     echo "Daemon ${daemon} disabled"
   done
   echo ""
