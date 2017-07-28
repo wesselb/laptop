@@ -52,8 +52,7 @@ brew cask install \
     slack \
     sqlitebrowser \
     sublime-text \
-    telegram \
-    # the-unarchiver \
+    telegram \ # the-unarchiver \
     totalspaces \
     transmission \
     usb-overdrive \
