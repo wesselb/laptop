@@ -55,7 +55,8 @@ brew cask install \
     usb-overdrive \
     vlc \
     witch \
-    xquartz
+    xquartz \
+    java
 
 echo "Installing brew packages..."
 brew install \
@@ -82,6 +83,13 @@ sed "s@{{HOME_PATH}}@${HOME}@" resources/com.apple.dock.plist \
         -
 killall cfprefsd  # Reload plist files.
 killall -HUP Dock  # Restart Dock.
+
+# Installing Package Control for Sublime Text. 
+if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; do
+    wget \
+        "https://packagecontrol.io/Package%20Control.sublime-package" \
+        -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
+fi
 
 echo "Installation finished."
 
