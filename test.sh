@@ -52,7 +52,7 @@ brew cask install \
     slack \
     sqlitebrowser \
     sublime-text \
-    telegram \ # the-unarchiver \
+    telegram \
     totalspaces \
     transmission \
     usb-overdrive \
@@ -77,22 +77,42 @@ brew install \
     htop
 
 echo "Installing python packages..."
+/usr/local/bin/python2 -m pip install \
+    numpy \
+    scipy \
+    sklearn \
+    pandas \
+    matplotlib \
+    ipython \
+    virtualenv \
+    virtualenvwrapper \
+    autopep8 \
+    flake8 \
+    jupyter \
+    pep8 \
+    yapf \
+    pygments \
+    pyflakes \
+    pylint
 
-# Configure dock.
+echo "Configuring Dock..."
 sed "s@{{HOME_PATH}}@${HOME}@" resources/com.apple.dock.plist \
     | plutil \
         -convert binary1 \
         -o ~/Library/Preferences/com.apple.dock.plist \
         -
 killall cfprefsd  # Reload plist files.
-killall -HUP Dock  # Restart Dock.
+killall Dock  # Restart Dock.
 
-# Installing Package Control for Sublime Text. 
-if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; do
+if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; then
+    echo "Installing Package Control for Sublime Text..."
     wget \
         "https://packagecontrol.io/Package%20Control.sublime-package" \
         -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
 fi
+
+echo "Please log into Dropbox."
+wait_confirmation
 
 echo "Installation finished."
 
