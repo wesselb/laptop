@@ -109,30 +109,18 @@ fix_spotlight(){
 
 
 start(){
-  echo ""
   fix_spotlight
   echo "System Spotlight & Suggestions Fixed"
-  echo ""
   for agent in "${AGENTS[@]}"
   do
     sudo launchctl unload -w /System/Library/LaunchAgents/${agent}.plist 2>/dev/null
     echo "Agent ${agent} disabled"
   done
-  echo ""
-  echo "Specified agents has been disabled"
-  echo ""
   for daemon in "${DAEMONS[@]}"
   do
     sudo launchctl unload -w /System/Library/LaunchDaemons/${daemon}.plist 2>/dev/null
     echo "Daemon ${daemon} disabled"
   done
-  echo ""
-  echo "Specified daemons has been disabled"
-  echo ""
-  echo "Spotlight and safari suggestions has been fixed and your keystorokes are no longer sent out to apple!"
-  echo ""
-  echo "!!!RESTART YOUR COMPUTER NOW TO APPLY CHANGES!!!"
-  echo ""
 }
 
 
@@ -143,20 +131,12 @@ restore(){
     launchctl load -w /System/Library/LaunchAgents/${agent}.plist
     echo "Agent ${agent} enabled"
   done
-  echo ""
-  echo "Specified agents has been enabled"
-  echo ""
   for daemon in "${DAEMONS[@]}"
   do
     sudo launchctl load -w /System/Library/LaunchDaemons/${daemon}.plist
     launchctl load -w /System/Library/LaunchDaemons/${daemon}.plist
     echo "Daemon ${daemon} enabled"
   done
-  echo ""
-  echo "Specified daemons has been enabled"
-  echo ""
-  echo "RESTART YOUR COMPUTER NOW TO APPLY CHANGES"
-  echo ""
 }
 
 
