@@ -38,7 +38,7 @@ brew cask install \
     flux \
     gfxcardstatus \
     google-chrome \
-    handbreak \
+    handbrake \
     haskell-platform \
     istat-menus \
     iterm2 \
