@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
+set -e
+
 . utils.sh
 
 if ! command_exists brew; then
     echo "Installing Homebrew..."
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+else
+    brew update
 fi
 
 if ! file_exists ~/.oh-my-zsh; then
