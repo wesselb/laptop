@@ -53,7 +53,7 @@ brew cask install \
     sqlitebrowser \
     sublime-text \
     telegram \
-    the-unarchiver \
+    # the-unarchiver \
     totalspaces \
     transmission \
     usb-overdrive \
