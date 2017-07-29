@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# TODO: The unarchiver
-# TODO: Atom settings
+# TODO: brew cask install the-unarchiver
 
 set -e
 
@@ -80,10 +79,16 @@ brew install \
     watch \
     wget \
     lame \
-    htop
+    htop \
+    bower \
+    trash \
+    cmake
+
+# Link python.
+ln -sf /usr/local/bin/python2 /usr/local/bin/python
 
 echo "Installing python packages..."
-/usr/local/bin/python2 -m pip install \
+/usr/local/bin/python -m pip install \
     numpy \
     scipy \
     sklearn \
@@ -110,6 +115,7 @@ sed "s@{{HOME_PATH}}@${HOME}@" Resources/com.apple.dock.plist \
 killall cfprefsd  # Reload plist files.
 killall Dock  # Restart Dock.
 
+# Install Package Control for Sublime Text.
 if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; then
     echo "Installing Package Control for Sublime Text..."
     wget \
@@ -117,39 +123,133 @@ if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Pac
         -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
 fi
 
-echo "Installing Source Code Pro for Powerline..."
+echo "Installing fonts..."
 cp "resources/Source Code Powerline Regular.otf" /Library/Fonts
+cp resources/Source\ Code\ Pro/* /Library/Fonts
 
 echo "Fixing your Mac..."
 cd Resources
 bash homecall.sh fixmacos
 cd ..
 
-echo "Please log into Dropbox."
+echo "Please log into Dropbox and let it sync."
 wait_confirmation
 
 echo "Setting desktop picture..."
-sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "update data set value = '"$HOME"/Dropbox/Private/Media/Backgrounds/Liquicity Escapism.jpg'" && killall Dock
+osascript -e 'tell application "System Events" to set picture of every desktop to ("'$HOME'/Dropbox/Private/Media/Backgrounds/Liquicity Escapism.jpg" as POSIX file as alias)'
+
+echo "Please configure Chrome."
+open -a "Google Chrome"
+wait_confirmation
+
+echo "Please close Atom after it opens."
+open -a "Atom"
+wait_confirmation
+/usr/local/bin/apm install sync-settings
+echo "Please restore settings from backup, and close Atom afterwards."
+open -a "Atom"
+wait_confirmation
 
 echo "Syncing configs..."
 cd ~/Dropbox/Private/Sync/Configs
 ./link.sh
 
-echo "Please manually sync the following apps with Dropbox:"
-echo "    1Password"
-echo "    Alfred"
-echo "    Dash"
+echo "Syncing iTunes..."
+ln -sf ~/Dropbox/Private/Media/iTunes ~/Music/
+
+if ! file_exists ~/.vim/bundle/Vundle.vim; then
+    echo "Setting up vim..."
+    echo "Exit vim after the installation completes."
+    wait_confirmation
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    vim -c "PluginInstall"
+    return_path="`pwd`"
+    cd ~/.vim/bundle/YouCompleteMe
+    ./install.py --clang-completer
+    cd "$return_path"
+fi
+
+echo "Configuring keyboard..."
+defaults write -g ApplePressAndHoldEnabled -bool false
+defaults write -g InitialKeyRepeat -int 15
+defaults write -g KeyRepeat -int 2
+defaults write -g com.apple.swipescrolldirection -bool FALSE
+killall cfprefsd
+echo "In \"System Preferences/Keyboard/Shortcuts\", please"
+echo "  - uncheck \"Spotlight/Show Spotlight Search\","
+echo "  - uncheck \"Mission Control/Move left a space\","
+echo "  - uncheck \"Mission Control/Move right a space\", and"
+echo "  - change \"Keyboard/Move focus to the next window\" to <ALT-\`>."
+echo "Furthermore, in \"Full Keyboard Access\", please select \"All controls\"."
 wait_confirmation
 
-echo "Please configure the energy management saving settings to your liking."
+echo "Please log into 1Password..."
+open -a "1Password 6"
+wait_confirmation
+echo "...configure Alfred..."
+open -a "Alfred 3"
+wait_confirmation
+echo "...configure Moom..."
+open -a Moom
+wait_confirmation
+echo "...configure Witch..."
+open ~/Library/PreferencePanes/Witch.prefPane
+wait_confirmation
+echo "...configure BTT..."
+open -a BetterTouchTool
+wait_confirmation
+echo "...configure DaisyDisk..."
+open -a DaisyDisk
+wait_confirmation
+echo "...configure Dash..."
+open -a Dash
+wait_confirmation
+echo "...configure iStatMenus..."
+open -a "iStat Menus"
+wait_confirmation
+echo "...configure TotalSpaces2..."
+open -a TotalSpaces2
+wait_confirmation
+echo "...configure Slack..."
+open -a Slack
+wait_confirmation
+echo "...configure gfxCardStatus..."
+open -a gfxCardStatus
+wait_confirmation
+echo "...configure Telegram..."
+open -a Telegram
+wait_confirmation
+echo "...and configure Sublime Text."
+open -a "Sublime Text"
 wait_confirmation
 
-echo "Please configure the sharing settings to your liking."
+echo "Please configure the following:"
+echo "  - slide \"Energy Saver/Battery/Turn display off after\" to the right,"
+echo "  - slide \"Energy Saver/Power Adapter/Turn display off after\" to the right,"
+echo "  - uncheck \"Energy Saver/Show battery status in menu bar\","
+echo "  - uncheck \"Date & Time/Clock/Show date and time in menu bar\","
+echo "  - check \"Users & Groups/Login Items/Dash/Hide\","
+echo "  - change the user picture,"
+echo "  - change the name of the computer in \"Sharing\"."
+open "Resources/Account Pictures"
 wait_confirmation
 
-echo "Please delete unnecessary preinstalled apps with AppCleaner."
-open -a AppCleaner
+echo "Please configure Finder's preferences to"
+echo "  - open in the right folder, "
+echo "  - show the right items in the side sidebar,"
+echo "  - show the right tags,"
+echo "  - have the right advanced settings:"
+echo "    - check \"Show all filename extensions\", and"
+echo "    - check \"Show warning before changing an extension\"; and"
+echo "  - set the right default view settings (<CMD-j>)."
 wait_confirmation
 
-echo "Installation finished."
+echo "Please configure iCould, internet accounts, and web.whatsapp.com."
+wait_confirmation
 
+if ! file_exists "/Applications/Little Snitch Configuration.app"; then
+    echo "Installing Little Snitch; afterwards, the installation is complete."
+    open "$(brew_latest Caskroom/little-snitch)/Little Snitch Installer.app"
+else
+    echo "The installation is complete."
+fi

@@ -20,3 +20,13 @@ wait_confirmation() {
     echo "Press <ENTER> to continue."
     read
 }
+
+brew_latest() {
+    versions=$(find /usr/local/$1/* -maxdepth 0 | sed "s@/usr/local/$1/@@")
+    latest_version=$(echo $versions | sort -r | head -n1)
+    echo "/usr/local/$1/$latest_version/"
+}
+
+vim() {
+    `brew_latest Cellar/macvim`MacVim.app/Contents/bin/vim $@
+}
