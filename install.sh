@@ -51,7 +51,6 @@ brew cask install \
     qlcolorcode \
     qlmarkdown \
     qlstephen \
-    karabiner-elements \
     sequel-pro \
     skim \
     slack \
@@ -64,7 +63,8 @@ brew cask install \
     vlc \
     witch \
     xquartz \
-    java
+    java \
+    gimp
 
 echo "Installing brew packages..."
 brew install \
@@ -82,7 +82,11 @@ brew install \
     htop \
     bower \
     trash \
-    cmake
+    cmake \
+    coreutils \
+    sox \
+    gawk \
+    duti
 
 # Link python.
 ln -sf /usr/local/bin/python2 /usr/local/bin/python
@@ -106,6 +110,9 @@ echo "Installing python packages..."
     pyflakes \
     pylint
 
+echo "Allowing apps to open from anywhere..."
+sudo spctl --master-disable
+
 echo "Configuring Dock..."
 sed "s@{{HOME_PATH}}@${HOME}@" Resources/com.apple.dock.plist \
     | plutil \
@@ -122,10 +129,6 @@ if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Pac
         "https://packagecontrol.io/Package%20Control.sublime-package" \
         -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
 fi
-
-echo "Installing fonts..."
-cp "resources/Source Code Powerline Regular.otf" /Library/Fonts
-cp resources/Source\ Code\ Pro/* /Library/Fonts
 
 echo "Fixing your Mac..."
 cd Resources
@@ -150,9 +153,18 @@ echo "Please restore settings from backup, and close Atom afterwards."
 open -a "Atom"
 wait_confirmation
 
+# Save current folder.
+here=`pwd`
+
 echo "Syncing configs..."
-cd ~/Dropbox/Private/Sync/Configs
+cd ~/Dropbox/Private/Sync/
 ./link.sh
+cd "$here"
+
+echo "Relinking resources..."
+cd ~/Dropbox/Resources/Utils/
+./link.sh
+cd "$here"
 
 echo "Syncing iTunes..."
 ln -sf ~/Dropbox/Private/Media/iTunes ~/Music/
@@ -179,8 +191,10 @@ echo "In \"System Preferences/Keyboard/Shortcuts\", please"
 echo "  - uncheck \"Spotlight/Show Spotlight Search\","
 echo "  - uncheck \"Mission Control/Move left a space\","
 echo "  - uncheck \"Mission Control/Move right a space\", and"
-echo "  - change \"Keyboard/Move focus to the next window\" to <ALT-\`>."
-echo "Furthermore, in \"Full Keyboard Access\", please select \"All controls\"."
+echo "  - change \"Keyboard/Move focus to the next window\" to <alt-\`>."
+echo "Furthermore,"
+echo "  - set \"Keyboard/Modifier Keys/Caps Lock\" to \"Escape\", and"
+echo "  - set \"Shortcuts/Full Keyboard Access\" to \"All controls\"."
 wait_confirmation
 
 echo "Please log into 1Password..."
@@ -207,9 +221,6 @@ wait_confirmation
 echo "...configure iStatMenus..."
 open -a "iStat Menus"
 wait_confirmation
-echo "...configure TotalSpaces2..."
-open -a TotalSpaces2
-wait_confirmation
 echo "...configure Slack..."
 open -a Slack
 wait_confirmation
@@ -223,14 +234,30 @@ echo "...and configure Sublime Text."
 open -a "Sublime Text"
 wait_confirmation
 
+echo "Configuring defaults apps for extensions..."
+./extensions.sh
+
+echo "Configuring login iterms..."
+items=$(osascript -e 'tell application "System Events" to get the name of every login item')
+if [[ $items == *"Dash"* ]]; then
+    osascript -e 'tell application "System Events" to delete login item "Dash"'
+fi
+if [[ $items != *"iTerm"* ]]; then
+    osascript -e 'tell application "System Events" to make login item at end with properties {name: "iTerm", path: "/Applications/iTerm.app", hidden: false}'
+fi
+
 echo "Please configure the following:"
 echo "  - slide \"Energy Saver/Battery/Turn display off after\" to the right,"
 echo "  - slide \"Energy Saver/Power Adapter/Turn display off after\" to the right,"
+echo "  - set \"Desktop & Screen Saver/Screen Saver/Start after\" to \"Never\","
 echo "  - uncheck \"Energy Saver/Show battery status in menu bar\","
+echo "  - uncheck \"Displays/Automatically adjust brightness\","
 echo "  - uncheck \"Date & Time/Clock/Show date and time in menu bar\","
-echo "  - check \"Users & Groups/Login Items/Dash/Hide\","
 echo "  - change the user picture,"
-echo "  - change the name of the computer in \"Sharing\"."
+echo "  - change the name of the computer in \"Sharing\","
+echo "  - uncheck \"Users & Groups/Guest User/Allow guests to log into the computer\","
+echo "  - uncheck \"Users & Groups/Guest User/Allow guest users to connect to shared folders\", and"
+echo "  - set \"Security & Privacy/General/Require password <option> after sleep or a screen saver begins\" to \"immediately\"."
 open "Resources/Account Pictures"
 wait_confirmation
 
@@ -241,15 +268,15 @@ echo "  - show the right tags,"
 echo "  - have the right advanced settings:"
 echo "    - check \"Show all filename extensions\", and"
 echo "    - check \"Show warning before changing an extension\"; and"
-echo "  - set the right default view settings (<CMD-j>)."
+echo "  - set the right default view settings (<cmd-j>)."
 wait_confirmation
 
 echo "Please configure iCould, internet accounts, and web.whatsapp.com."
 wait_confirmation
 
 if ! file_exists "/Applications/Little Snitch Configuration.app"; then
-    echo "Installing Little Snitch; afterwards, the installation is complete."
+    echo "Installing Little Snitch; afterwards, the installation is complete; enable FileVault if wanted."
     open "$(brew_latest Caskroom/little-snitch)/Little Snitch Installer.app"
 else
-    echo "The installation is complete."
+    echo "The installation is complete; enable FileVault if wanted."
 fi

@@ -1,0 +1,4 @@
+md->Sublime Text
+tex->Sublime Text
+sh->Sublime Text
+txt->Sublime Text
