@@ -27,6 +27,5 @@ brew_latest() {
     echo "/usr/local/$1/$latest_version/"
 }
 
-vim() {
-    `brew_latest Cellar/macvim`MacVim.app/Contents/bin/vim $@
-}
+vim() { `brew_latest Cellar/macvim`MacVim.app/Contents/bin/vim $@ }
+vimdiff() { `brew_latest Cellar/macvim`MacVim.app/Contents/bin/vimdiff $@ }

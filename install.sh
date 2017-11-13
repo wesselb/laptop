@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# TODO: brew cask install the-unarchiver
-
 set -e
 
 . utils.sh
@@ -29,6 +27,7 @@ brew cask install \
     atom \
     bettertouchtool \
     betterzipql \
+    contexts \
     daisydisk \
     dash \
     duet \
@@ -61,10 +60,10 @@ brew cask install \
     transmission \
     usb-overdrive \
     vlc \
-    witch \
     xquartz \
     java \
-    gimp
+    gimp \
+    the-unarchiver
 
 echo "Installing brew packages..."
 brew install \
@@ -86,13 +85,17 @@ brew install \
     coreutils \
     sox \
     gawk \
-    duti
+    duti \
+    ruby \
+    ag \
+    imagemagick \
+    graphviz --with-gts
 
 # Link python.
 ln -sf /usr/local/bin/python2 /usr/local/bin/python
 
 echo "Installing python packages..."
-/usr/local/bin/python -m pip install \
+/usr/local/bin/pip install \
     numpy \
     scipy \
     sklearn \
@@ -108,7 +111,13 @@ echo "Installing python packages..."
     yapf \
     pygments \
     pyflakes \
-    pylint
+    pylint \
+    ipdb
+
+echo "Installing gems..."
+sudo /usr/local/bin/gem install \
+    jekyll \
+    bundler
 
 echo "Allowing apps to open from anywhere..."
 sudo spctl --master-disable
@@ -193,6 +202,9 @@ echo "  - uncheck \"Mission Control/Move left a space\","
 echo "  - uncheck \"Mission Control/Move right a space\", and"
 echo "  - change \"Keyboard/Move focus to the next window\" to <alt-\`>."
 echo "Furthermore,"
+echo "  - uncheck \"Keyboard/Text/Correct spelling automatically\","
+echo "  - uncheck \"Keyboard/Text/Capitalize words automatically\","
+echo "  - uncheck \"Keyboard/Text/Add period with double-space\","
 echo "  - set \"Keyboard/Modifier Keys/Caps Lock\" to \"Escape\", and"
 echo "  - set \"Shortcuts/Full Keyboard Access\" to \"All controls\"."
 wait_confirmation
@@ -206,8 +218,8 @@ wait_confirmation
 echo "...configure Moom..."
 open -a Moom
 wait_confirmation
-echo "...configure Witch..."
-open ~/Library/PreferencePanes/Witch.prefPane
+echo "...configure Contexts..."
+open -a Contexts
 wait_confirmation
 echo "...configure BTT..."
 open -a BetterTouchTool
@@ -247,12 +259,16 @@ if [[ $items != *"iTerm"* ]]; then
 fi
 
 echo "Please configure the following:"
+echo "  - check \"Bluetooth/Show Bluetooth in menu bar\","
+echo "  - set \"Trackpad/Point & Click/Look up & data detectors\" to \"Tap with three fingers\","
 echo "  - slide \"Energy Saver/Battery/Turn display off after\" to the right,"
+echo "  - uncheck \"Energy Saver/Battery/Slightly dim display while on battery power\","
 echo "  - slide \"Energy Saver/Power Adapter/Turn display off after\" to the right,"
 echo "  - set \"Desktop & Screen Saver/Screen Saver/Start after\" to \"Never\","
 echo "  - uncheck \"Energy Saver/Show battery status in menu bar\","
 echo "  - uncheck \"Displays/Automatically adjust brightness\","
 echo "  - uncheck \"Date & Time/Clock/Show date and time in menu bar\","
+echo "  - uncheck \"Accessibility/Display/Shake mouse pointer to locate\","
 echo "  - change the user picture,"
 echo "  - change the name of the computer in \"Sharing\","
 echo "  - uncheck \"Users & Groups/Guest User/Allow guests to log into the computer\","
