@@ -53,7 +53,7 @@ brew cask install \
     sequel-pro \
     skim \
     slack \
-    sqlitebrowser \
+    db-browser-for-sqlite \
     sublime-text \
     telegram \
     totalspaces \
@@ -89,7 +89,8 @@ brew install \
     ruby \
     ag \
     imagemagick \
-    graphviz --with-gts
+    graphviz --with-gts \
+    emacs --with-cocoa
 
 # Link python.
 ln -sf /usr/local/bin/python2 /usr/local/bin/python
