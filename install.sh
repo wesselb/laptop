@@ -20,38 +20,38 @@ if ! file_exists ~/.oh-my-zsh; then
 fi
 
 echo "Installing brew casks..."
-brew cask install \
+brew install \
     1password \
     alfred \
     appcleaner \
-    atom \
     bettertouchtool \
     betterzipql \
     contexts \
     daisydisk \
     dash \
-    duet \
     dropbox \
-    filezilla \
+    docker \
+    firefox \
     flux \
     gfxcardstatus \
-    google-chrome \
     handbrake \
-    haskell-platform \
+    icons8 \
     istat-menus \
     iterm2 \
-    julia \
     launchcontrol \
     little-snitch \
     mactex \
     microsoft-office \
+    miniconda \
     moom \
+    nordvpn \
     pycharm-ce \
     qlcolorcode \
     qlmarkdown \
     qlstephen \
     sequel-pro \
     skim \
+    signal \
     slack \
     db-browser-for-sqlite \
     sublime-text \
@@ -61,9 +61,8 @@ brew cask install \
     usb-overdrive \
     vlc \
     xquartz \
-    java \
-    gimp \
-    the-unarchiver
+    the-unarchiver \
+    whatsapp
 
 echo "Installing brew packages..."
 brew install \
@@ -71,6 +70,7 @@ brew install \
     djview4 \
     fzf \
     gnu-typist \
+    vim --with-override-system-vi \
     macvim \
     pandoc \
     python \
@@ -90,35 +90,7 @@ brew install \
     ag \
     imagemagick \
     graphviz --with-gts \
-    emacs --with-cocoa
-
-# Link python.
-ln -sf /usr/local/bin/python2 /usr/local/bin/python
-
-echo "Installing python packages..."
-/usr/local/bin/pip install \
-    numpy \
-    scipy \
-    sklearn \
-    pandas \
-    matplotlib \
-    ipython \
-    virtualenv \
-    virtualenvwrapper \
-    autopep8 \
-    flake8 \
-    jupyter \
-    pep8 \
-    yapf \
-    pygments \
-    pyflakes \
-    pylint \
-    ipdb
-
-echo "Installing gems..."
-sudo /usr/local/bin/gem install \
-    jekyll \
-    bundler
+    ranger
 
 echo "Allowing apps to open from anywhere..."
 sudo spctl --master-disable
@@ -140,27 +112,14 @@ if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Pac
         -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
 fi
 
-echo "Fixing your Mac..."
-cd Resources
-bash homecall.sh fixmacos
-cd ..
-
 echo "Please log into Dropbox and let it sync."
 wait_confirmation
 
 echo "Setting desktop picture..."
 osascript -e 'tell application "System Events" to set picture of every desktop to ("'$HOME'/Dropbox/Private/Media/Backgrounds/Liquicity Escapism.jpg" as POSIX file as alias)'
 
-echo "Please configure Chrome."
-open -a "Google Chrome"
-wait_confirmation
-
-echo "Please close Atom after it opens."
-open -a "Atom"
-wait_confirmation
-/usr/local/bin/apm install sync-settings
-echo "Please restore settings from backup, and close Atom afterwards."
-open -a "Atom"
+echo "Please configure Firefox."
+open -a "Firefox"
 wait_confirmation
 
 # Save current folder.
@@ -213,6 +172,9 @@ wait_confirmation
 echo "Please log into 1Password..."
 open -a "1Password 6"
 wait_confirmation
+echo "...copy SSH keys from 1Password to ~/.ssh..."
+open ~/.ssh
+wait_confirmation
 echo "...configure Alfred..."
 open -a "Alfred 3"
 wait_confirmation
@@ -240,8 +202,14 @@ wait_confirmation
 echo "...configure gfxCardStatus..."
 open -a gfxCardStatus
 wait_confirmation
+echo "...configure WhatsApp..."
+open -a WhatsApp
+wait_confirmation
 echo "...configure Telegram..."
 open -a Telegram
+wait_confirmation
+echo "...configure Signal..."
+open -a Signal
 wait_confirmation
 echo "...and configure Sublime Text."
 open -a "Sublime Text"
@@ -288,7 +256,7 @@ echo "    - check \"Show warning before changing an extension\"; and"
 echo "  - set the right default view settings (<cmd-j>)."
 wait_confirmation
 
-echo "Please configure iCould, internet accounts, and web.whatsapp.com."
+echo "Please configure iCould and internet accounts."
 wait_confirmation
 
 if ! file_exists "/Applications/Little Snitch Configuration.app"; then
