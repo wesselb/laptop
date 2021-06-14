@@ -1,5 +1,0 @@
-Complete the following steps to install TotalSpaces:
-  1. Disable SIP: boot into recovery using <CMD-r>, and execute "csrutil disable".
-  2. Boot and run "open -a TotalSpaces2".
-  3. Enable SIP: boot into recovery using <CMD-r>, and execute "csrutil enable".
-

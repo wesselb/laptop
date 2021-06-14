@@ -4,6 +4,9 @@ set -e
 
 . utils.sh
 
+echo "Is SIP turned off? (Boot into recovery mode (cmd-R) and run \"csrutil disable\".)"
+wait_confirmation
+
 if ! command_exists brew; then
     echo "Installing Homebrew..."
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -20,19 +23,21 @@ if ! file_exists ~/.oh-my-zsh; then
 fi
 
 echo "Installing brew casks..."
-brew install \
+brew install --cask \
     1password \
     alfred \
     appcleaner \
     bettertouchtool \
-    betterzipql \
+    betterzip \
     contexts \
     daisydisk \
     dash \
-    dropbox \
+    db-browser-for-sqlite \
     docker \
+    dropbox \
     firefox \
     flux \
+    gcc \
     gfxcardstatus \
     handbrake \
     icons8 \
@@ -42,6 +47,7 @@ brew install \
     little-snitch \
     mactex \
     microsoft-office \
+    microsoft-teams \
     miniconda \
     moom \
     nordvpn \
@@ -50,59 +56,56 @@ brew install \
     qlmarkdown \
     qlstephen \
     sequel-pro \
-    skim \
     signal \
+    skim \
     slack \
-    db-browser-for-sqlite \
     sublime-text \
     telegram \
+    the-unarchiver \
     totalspaces \
     transmission \
     usb-overdrive \
     vlc \
+    whatsapp \
     xquartz \
-    the-unarchiver \
-    whatsapp
+    zoom
 
 echo "Installing brew packages..."
 brew install \
+    ag \
     bazel \
+    bower \
+    cmake \
+    coreutils \
     djview4 \
+    duti \
     fzf \
+    gawk \
     gnu-typist \
-    vim --with-override-system-vi \
+    htop \
+    imagemagick \
+    lame \
     macvim \
     pandoc \
     python \
-    tmux \
-    watch \
-    wget \
-    lame \
-    htop \
-    bower \
-    trash \
-    cmake \
-    coreutils \
-    sox \
-    gawk \
-    duti \
+    ranger \
+    rbenv \
     ruby \
-    ag \
-    imagemagick \
-    graphviz --with-gts \
-    ranger
+    sox \
+    tmux \
+    trash \
+    vim \
+    watch \
+    wget
 
 echo "Allowing apps to open from anywhere..."
 sudo spctl --master-disable
 
-echo "Configuring Dock..."
-sed "s@{{HOME_PATH}}@${HOME}@" Resources/com.apple.dock.plist \
-    | plutil \
-        -convert binary1 \
-        -o ~/Library/Preferences/com.apple.dock.plist \
-        -
-killall cfprefsd  # Reload plist files.
-killall Dock  # Restart Dock.
+echo "Please log into Dropbox and let it sync."
+wait_confirmation
+
+echo "Syncing iTunes..."
+ln -sf ~/Dropbox/Private/Media/iTunes ~/Music/
 
 # Install Package Control for Sublime Text.
 if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Packages/Package Control.sublime-package"; then
@@ -112,32 +115,7 @@ if ! file_exists "$HOME/Library/Application Support/Sublime Text 3/Installed Pac
         -P "$HOME/Library/Application Support/Sublime Text 3/Installed Packages"
 fi
 
-echo "Please log into Dropbox and let it sync."
-wait_confirmation
-
-echo "Setting desktop picture..."
-osascript -e 'tell application "System Events" to set picture of every desktop to ("'$HOME'/Dropbox/Private/Media/Backgrounds/Liquicity Escapism.jpg" as POSIX file as alias)'
-
-echo "Please configure Firefox."
-open -a "Firefox"
-wait_confirmation
-
-# Save current folder.
-here=`pwd`
-
-echo "Syncing configs..."
-cd ~/Dropbox/Private/Sync/
-./link.sh
-cd "$here"
-
-echo "Relinking resources..."
-cd ~/Dropbox/Resources/Utils/
-./link.sh
-cd "$here"
-
-echo "Syncing iTunes..."
-ln -sf ~/Dropbox/Private/Media/iTunes ~/Music/
-
+# Setup vim.
 if ! file_exists ~/.vim/bundle/Vundle.vim; then
     echo "Setting up vim..."
     echo "Exit vim after the installation completes."
@@ -170,49 +148,52 @@ echo "  - set \"Shortcuts/Full Keyboard Access\" to \"All controls\"."
 wait_confirmation
 
 echo "Please log into 1Password..."
-open -a "1Password 6"
+open -a "1Password 7"
 wait_confirmation
 echo "...copy SSH keys from 1Password to ~/.ssh..."
 open ~/.ssh
 wait_confirmation
 echo "...configure Alfred..."
-open -a "Alfred 3"
+open -a "Alfred 4"
 wait_confirmation
 echo "...configure Moom..."
-open -a Moom
+open -a "Moom"
 wait_confirmation
 echo "...configure Contexts..."
-open -a Contexts
+open -a "Contexts"
 wait_confirmation
 echo "...configure BTT..."
-open -a BetterTouchTool
+open -a "BetterTouchTool"
 wait_confirmation
 echo "...configure DaisyDisk..."
-open -a DaisyDisk
+open -a "DaisyDisk"
 wait_confirmation
 echo "...configure Dash..."
-open -a Dash
+open -a "Dash"
 wait_confirmation
 echo "...configure iStatMenus..."
 open -a "iStat Menus"
 wait_confirmation
 echo "...configure Slack..."
-open -a Slack
+open -a "Slack"
 wait_confirmation
 echo "...configure gfxCardStatus..."
-open -a gfxCardStatus
+open -a "gfxCardStatus"
 wait_confirmation
 echo "...configure WhatsApp..."
-open -a WhatsApp
+open -a "WhatsApp"
 wait_confirmation
 echo "...configure Telegram..."
-open -a Telegram
+open -a "Telegram"
 wait_confirmation
 echo "...configure Signal..."
-open -a Signal
+open -a "Signal"
 wait_confirmation
-echo "...and configure Sublime Text."
+echo "...and configure Sublime Text..."
 open -a "Sublime Text"
+wait_confirmation
+echo "...and configure Little Snitch."
+open -a "Little Snitch"
 wait_confirmation
 
 echo "Configuring defaults apps for extensions..."
@@ -220,29 +201,51 @@ echo "Configuring defaults apps for extensions..."
 
 echo "Configuring login iterms..."
 items=$(osascript -e 'tell application "System Events" to get the name of every login item')
-if [[ $items == *"Dash"* ]]; then
-    osascript -e 'tell application "System Events" to delete login item "Dash"'
-fi
-if [[ $items != *"iTerm"* ]]; then
-    osascript -e 'tell application "System Events" to make login item at end with properties {name: "iTerm", path: "/Applications/iTerm.app", hidden: false}'
-fi
+# Delete applications from login items.
+for app in Dash
+do
+    if [[ $items != *"$app"* ]]; then
+        osascript -e "tell application \"System Events\" to delete login item \"${app}\""
+    fi
+done
+# Add applications to login items.
+for app in iTerm Contexts Moom TotalSpaces2
+do
+    if [[ $items != *"$app"* ]]; then
+        osascript -e "tell application \"System Events\" to make login item at end with properties {name: \"${app}\", path: \"/Applications/${app}.app\", hidden: false}"
+    fi
+done
+
+# Save current folder.
+here=`pwd`
+
+echo "Syncing configs..."
+cd ~/Dropbox/Private/Sync/
+./link.sh
+cd "$here"
+
+echo "Relinking resources..."
+cd ~/Dropbox/Resources/Utils/
+./link.sh
+cd "$here"
 
 echo "Please configure the following:"
-echo "  - check \"Bluetooth/Show Bluetooth in menu bar\","
-echo "  - set \"Trackpad/Point & Click/Look up & data detectors\" to \"Tap with three fingers\","
-echo "  - slide \"Energy Saver/Battery/Turn display off after\" to the right,"
-echo "  - uncheck \"Energy Saver/Battery/Slightly dim display while on battery power\","
-echo "  - slide \"Energy Saver/Power Adapter/Turn display off after\" to the right,"
-echo "  - set \"Desktop & Screen Saver/Screen Saver/Start after\" to \"Never\","
-echo "  - uncheck \"Energy Saver/Show battery status in menu bar\","
-echo "  - uncheck \"Displays/Automatically adjust brightness\","
-echo "  - uncheck \"Date & Time/Clock/Show date and time in menu bar\","
 echo "  - uncheck \"Accessibility/Display/Shake mouse pointer to locate\","
+echo "  - slide   \"Battery/Battery/Turn display off after\" to the right,"
+echo "  - uncheck \"Battery/Battery/Slightly dim display while on battery power\","
+echo "  - slide   \"Battery/Power Adapter/Turn display off after\" to the right,"
+echo "  - uncheck \"Battery/Show battery status in menu bar\","
+echo "  - check   \"Bluetooth/Show Bluetooth in menu bar\","
+echo "  - uncheck \"Date & Time/Clock/Show date and time in menu bar\","
+echo "  - uncheck \"Displays/Automatically adjust brightness\","
+echo "  - set     \"Desktop & Screen Saver/Screen Saver/Start after\" to \"Never\","
+echo "  - uncheck \"Users & Groups/Guest User/Allow guests to log into the computer\","
+echo "  - uncheck \"Users & Groups/Guest User/Allow guest users to connect to shared folders\","
+echo "  - set     \"Security & Privacy/General/Require password <option> after sleep or a screen saver begins\" to \"immediately\","
+echo "  - check   \"Time Machine/Show Time Machine n menu bar\"."
+echo "  - set     \"Trackpad/Point & Click/Look up & data detectors\" to \"Tap with three fingers\","
 echo "  - change the user picture,"
 echo "  - change the name of the computer in \"Sharing\","
-echo "  - uncheck \"Users & Groups/Guest User/Allow guests to log into the computer\","
-echo "  - uncheck \"Users & Groups/Guest User/Allow guest users to connect to shared folders\", and"
-echo "  - set \"Security & Privacy/General/Require password <option> after sleep or a screen saver begins\" to \"immediately\"."
 open "Resources/Account Pictures"
 wait_confirmation
 
@@ -256,12 +259,13 @@ echo "    - check \"Show warning before changing an extension\"; and"
 echo "  - set the right default view settings (<cmd-j>)."
 wait_confirmation
 
+echo "Please set your preferred desktop background."
+wait_confirm
+
 echo "Please configure iCould and internet accounts."
 wait_confirmation
 
-if ! file_exists "/Applications/Little Snitch Configuration.app"; then
-    echo "Installing Little Snitch; afterwards, the installation is complete; enable FileVault if wanted."
-    open "$(brew_latest Caskroom/little-snitch)/Little Snitch Installer.app"
-else
-    echo "The installation is complete; enable FileVault if wanted."
-fi
+killall cfprefsd  # Reload plist files.
+killall Dock  # Restart Dock.
+
+echo "The installation is complete."
