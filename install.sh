@@ -87,6 +87,7 @@ brew install \
     lame \
     macvim \
     pandoc \
+    pdfgrep \
     python \
     ranger \
     rbenv \
